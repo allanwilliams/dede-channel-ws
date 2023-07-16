@@ -1,0 +1,222 @@
+// This is your Prisma schema file,
+// learn more about it in the docs https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+//CHATS MODELS
+
+model TipoContato {
+  id            String    @id @default(uuid())
+  nome          String
+  criado_em     DateTime? @default(now())
+  modificado_em DateTime?
+
+  criado_por        Usuario?     @relation("tipocontato_criado_por", fields: [criado_por_id], references: [id])
+  criado_por_id     String?
+  modificado_por    Usuario?     @relation("tipocontato_modificado_por", fields: [modificado_por_id], references: [id])
+  modificado_por_id String?
+  ChatConfig        ChatConfig[]
+}
+
+model ChatConfig {
+  id                  String       @id @default(uuid())
+  criado_em           DateTime?    @default(now())
+  modificado_em       DateTime?
+  canal               Canal        @relation(fields: [canal_id], references: [id])
+  canal_id            String
+  chave_cliente_canal String
+  Chat                Chat?        @relation(fields: [chat_id], references: [id])
+  chat_id             String?
+  Mensagem            Mensagem[]
+  TipoContato         TipoContato? @relation(fields: [tipo_contato_id], references: [id])
+  tipo_contato_id     String?
+
+  criado_por        Usuario?    @relation("chatconfig_criado_por", fields: [criado_por_id], references: [id])
+  criado_por_id     String?
+  modificado_por    Usuario?    @relation("chatconfig_modificado_por", fields: [modificado_por_id], references: [id])
+  modificado_por_id String?
+  Historico         Historico[]
+}
+
+model Chat {
+  id                         String       @id @default(uuid())
+  criado_em                  DateTime?    @default(now())
+  modificado_em              DateTime?
+  Mensagem                   Mensagem[]
+  ChatConfig                 ChatConfig[]
+  Status                     Status?      @relation(fields: [status_id], references: [id])
+  status_id                  String?
+  Usuario                    Usuario?     @relation(fields: [usuario_id], references: [id])
+  usuario_id                 String? //alterar para modelo
+  ultima_interacao_assistido String?
+  ultima_interacao_usuario   String?
+  em_fila                    Boolean?
+  Historico                  Historico[]
+  Assistido                  Assistido?
+
+  criado_por        Usuario? @relation("chat_criado_por", fields: [criado_por_id], references: [id])
+  criado_por_id     String?
+  modificado_por    Usuario? @relation("chat_modificado_por", fields: [modificado_por_id], references: [id])
+  modificado_por_id String?
+}
+
+model Assistido {
+  id            String    @id @default(uuid())
+  criado_em     DateTime? @default(now())
+  modificado_em DateTime?
+  nome          String
+  cpf           String?
+  Chat          Chat?     @relation(fields: [chat_id], references: [id])
+  chat_id       String?   @unique
+
+  criado_por        Usuario? @relation("assistido_criado_por", fields: [criado_por_id], references: [id])
+  criado_por_id     String?
+  modificado_por    Usuario? @relation("assistido_modificado_por", fields: [modificado_por_id], references: [id])
+  modificado_por_id String?
+}
+
+model Mensagem {
+  id             String     @id @default(uuid())
+  criado_em      DateTime?  @default(now())
+  modificado_em  DateTime?
+  mensagem       String
+  ChatConfig     ChatConfig @relation(fields: [chat_config_id], references: [id])
+  chat_config_id String
+  Chat           Chat       @relation(fields: [chat_id], references: [id])
+  chat_id        String
+  lida           Boolean
+  from_assistido Boolean
+  from_bot       Boolean?
+  usuario_id     String?
+  ack            Int
+  anexo          Anexo[]
+  oculta         Boolean?
+
+  criado_por        Usuario? @relation("mensagem_criado_por", fields: [criado_por_id], references: [id])
+  criado_por_id     String?
+  modificado_por    Usuario? @relation("mensagem_modificado_por", fields: [modificado_por_id], references: [id])
+  modificado_por_id String?
+}
+
+model Canal {
+  id            String       @id @default(uuid())
+  criado_em     DateTime?    @default(now())
+  modificado_em DateTime?
+  nome          String
+  ChatConfig    ChatConfig[]
+
+  criado_por        Usuario? @relation("canal_criado_por", fields: [criado_por_id], references: [id])
+  criado_por_id     String?
+  modificado_por    Usuario? @relation("canal_modificado_por", fields: [modificado_por_id], references: [id])
+  modificado_por_id String?
+}
+
+model Anexo {
+  id            String    @id @default(uuid())
+  criado_em     DateTime? @default(now())
+  modificado_em DateTime?
+  mensagem_id   String
+  file          String
+  tipo          Int
+  Mensagem      Mensagem? @relation(fields: [mensagemId], references: [id])
+  mensagemId    String?
+
+  criado_por        Usuario? @relation("anexo_criado_por", fields: [criado_por_id], references: [id])
+  criado_por_id     String?
+  modificado_por    Usuario? @relation("anexo_modificado_por", fields: [modificado_por_id], references: [id])
+  modificado_por_id String?
+}
+
+model Status {
+  id            String    @id @default(uuid())
+  criado_em     DateTime? @default(now())
+  modificado_em DateTime?
+  nome          String
+  Chat          Chat[]
+
+  criado_por        Usuario?    @relation("status_criado_por", fields: [criado_por_id], references: [id])
+  criado_por_id     String?
+  modificado_por    Usuario?    @relation("status_modificado_por", fields: [modificado_por_id], references: [id])
+  modificado_por_id String?
+  Historico         Historico[]
+}
+
+model Historico {
+  id            String    @id @default(uuid())
+  criado_em     DateTime? @default(now())
+  modificado_em DateTime?
+  anotacao      String
+  protocolo     String
+
+  Chat           Chat?       @relation(fields: [chat_id], references: [id])
+  chat_id        String?
+  ChatConfig     ChatConfig  @relation(fields: [chat_config_id], references: [id])
+  chat_config_id String
+  Status         Status      @relation(fields: [status_id], references: [id])
+  status_id      String
+  Finalizacao    Finalizacao @relation(fields: [finalizacao_id], references: [id])
+  finalizacao_id String
+
+  criado_por        Usuario? @relation("historico_criado_por", fields: [criado_por_id], references: [id])
+  criado_por_id     String?
+  modificado_por    Usuario? @relation("historico_modificado_por", fields: [modificado_por_id], references: [id])
+  modificado_por_id String?
+}
+
+model Finalizacao {
+  id            String    @id @default(uuid())
+  criado_em     DateTime? @default(now())
+  modificado_em DateTime?
+  nome          String
+
+  criado_por        Usuario?    @relation("finalizacao_criado_por", fields: [criado_por_id], references: [id])
+  criado_por_id     String?
+  modificado_por    Usuario?    @relation("finalizacao_modificado_por", fields: [modificado_por_id], references: [id])
+  modificado_por_id String?
+  Historico         Historico[]
+}
+
+model Usuario {
+  id            String    @id @default(uuid())
+  criado_em     DateTime? @default(now())
+  modificado_em DateTime?
+  nome          String
+  cpf           String?
+  matricula     String?
+  Chat          Chat[]
+
+  criado_por        Usuario? @relation("usuario_criado_por", fields: [criado_por_id], references: [id])
+  criado_por_id     String?
+  modificado_por    Usuario? @relation("usuario_modificado_por", fields: [modificado_por_id], references: [id])
+  modificado_por_id String?
+
+  ChatConfigCriado      ChatConfig[]  @relation("chatconfig_criado_por")
+  ChatConfigModificado  ChatConfig[]  @relation("chatconfig_modificado_por")
+  ChatCriado            Chat[]        @relation("chat_criado_por")
+  ChatModificado        Chat[]        @relation("chat_modificado_por")
+  AssistidoCriado       Assistido[]   @relation("assistido_criado_por")
+  AssistidoModificado   Assistido[]   @relation("assistido_modificado_por")
+  MensagemCriado        Mensagem[]    @relation("mensagem_criado_por")
+  MensagemModificado    Mensagem[]    @relation("mensagem_modificado_por")
+  CanalCriado           Canal[]       @relation("canal_criado_por")
+  CanalModificado       Canal[]       @relation("canal_modificado_por")
+  AnexoCriado           Anexo[]       @relation("anexo_criado_por")
+  AnexoModificado       Anexo[]       @relation("anexo_modificado_por")
+  StatusCriado          Status[]      @relation("status_criado_por")
+  StatusModificado      Status[]      @relation("status_modificado_por")
+  HistoricoCriado       Historico[]   @relation("historico_criado_por")
+  HistoricoModificado   Historico[]   @relation("historico_modificado_por")
+  FinalizacaoCriado     Finalizacao[] @relation("finalizacao_criado_por")
+  FinalizacaoModificado Finalizacao[] @relation("finalizacao_modificado_por")
+  UsuarioCriado         Usuario[]     @relation("usuario_criado_por")
+  UsuarioModificado     Usuario[]     @relation("usuario_modificado_por")
+  TipoContatoCriado     TipoContato[] @relation("tipocontato_criado_por")
+  TipoContatoModificado TipoContato[] @relation("tipocontato_modificado_por")
+}
