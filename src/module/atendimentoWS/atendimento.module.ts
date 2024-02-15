@@ -14,6 +14,8 @@ import { StatusRepository } from '../atendimento/status/repositories/status-repo
 import { PrismaStatusRepository } from '../atendimento/status/repositories/prisma/prisma-status-repository';
 import { TipoContatoRepository } from '../atendimento/tipo_contato/repositories/tipo-contato-repository';
 import { PrismaTipoContatoRepository } from '../atendimento/tipo_contato/repositories/prisma/prisma-tipo-contato-repository';
+import { AnexoRepository } from '../atendimento/anexo/repositories/anexo-repository';
+import { PrismaAnexoRepository } from '../atendimento/anexo/repositories/prisma/prisma-anexo-repository';
 
 @Module({
   providers: [
@@ -35,6 +37,10 @@ import { PrismaTipoContatoRepository } from '../atendimento/tipo_contato/reposit
     {
       provide: MensagemRepository,
       useClass: PrismaMensagemRepository
+    },
+    {
+      provide: AnexoRepository,
+      useClass: PrismaAnexoRepository
     },
     {
       provide: StatusRepository,

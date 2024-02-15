@@ -9,6 +9,8 @@ import { MensagemRepository } from '../atendimento/mensagem/repositories/mensage
 import { CreateMensagemDto } from '../atendimento/mensagem/dto/create-mensagem.dto';
 import { StatusRepository } from '../atendimento/status/repositories/status-repository';
 import { TipoContatoRepository } from '../atendimento/tipo_contato/repositories/tipo-contato-repository';
+import { CreateAnexoDto } from '../atendimento/anexo/dto/create-anexo.dto';
+import { AnexoRepository } from '../atendimento/anexo/repositories/anexo-repository';
 
 @WebSocketGateway({
   cors: {
@@ -23,6 +25,7 @@ export class AtendimentoGateway {
     private chatRepository: ChatRepository,
     private canalRepository: CanalRepository,
     private mensagemRepository: MensagemRepository,
+    private anexoRepository: AnexoRepository,
     private statusRepository: StatusRepository,
     private tipoContatoRepository: TipoContatoRepository,
   ) { }
@@ -46,7 +49,6 @@ export class AtendimentoGateway {
   getAllStatus() {
     return this.statusRepository.findAll();
   }
-
   @SubscribeMessage('getAllTipoContato')
   getAllTipoContato() {
     return this.tipoContatoRepository.findAll();
@@ -55,5 +57,10 @@ export class AtendimentoGateway {
   @SubscribeMessage('sendMessage')
   sendMessage(@MessageBody() createMensagemDto: CreateMensagemDto) {
     return this.mensagemRepository.create(createMensagemDto)
+  }
+
+  @SubscribeMessage('sendAnexo')
+  sendAnexo(@MessageBody() createAnexoDto: CreateAnexoDto) {
+    return this.anexoRepository.create(createAnexoDto)
   }
 }

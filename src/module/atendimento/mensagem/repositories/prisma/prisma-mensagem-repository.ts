@@ -17,6 +17,8 @@ export class PrismaMensagemRepository implements MensagemRepository {
             data: {
                 id: randomUUID(),
                 ...createMensagemDto
+            },include:{
+                anexo: true
             }
         })
     }

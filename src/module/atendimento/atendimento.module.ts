@@ -8,10 +8,11 @@ import { MensagemModule } from './mensagem/mensagem.module';
 import { StatusModule } from './status/status.module';
 import { TipoContatoModule } from './tipo_contato/tipo_contato.module';
 import { ChatConfigModule } from './chat_config/chat_config.module';
+import { AnexoModule } from './anexo/anexo.module';
 
 @Module({
   controllers: [AtendimentoController],
   providers: [AtendimentoService],
-  imports: [AssistidoModule, ChatModule, CanalModule, MensagemModule, StatusModule, TipoContatoModule, ChatConfigModule]
+  imports: [AssistidoModule, ChatModule, CanalModule, MensagemModule, StatusModule, TipoContatoModule, ChatConfigModule, AnexoModule]
 })
 export class AtendimentoModule {}

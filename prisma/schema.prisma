@@ -122,11 +122,10 @@ model Anexo {
   id            String    @id @default(uuid())
   criado_em     DateTime? @default(now())
   modificado_em DateTime?
-  mensagem_id   String
   file          String
   tipo          Int
-  Mensagem      Mensagem? @relation(fields: [mensagemId], references: [id])
-  mensagemId    String?
+  Mensagem      Mensagem? @relation(fields: [mensagem_id], references: [id])
+  mensagem_id   String?
 
   criado_por        Usuario? @relation("anexo_criado_por", fields: [criado_por_id], references: [id])
   criado_por_id     String?

@@ -1,4 +1,5 @@
 import { IsNotEmpty } from "class-validator";
+import { CreateAnexoDto } from "../../anexo/dto/create-anexo.dto";
 
 export class CreateMensagemDto {
     id?: string;
@@ -19,5 +20,5 @@ export class CreateMensagemDto {
     from_assistido: boolean;
 
     @IsNotEmpty()
-    ack: number;
+    ack: number;    
 }
